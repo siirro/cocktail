@@ -91,24 +91,24 @@
     </nav>
 
     <div class="content">
-      <div class="container">
-        <p>
-          <span style="font-size: 200%">{{data.title}}</span>
-          <span style="font-size: 100%">by {{data.id }} </span>
-        </p>
-        <img src="{{ data.image }}" class="img" />
-      </div>
-      <h3>재료</h3>
-      <h6>{{ data.ingredient }}</h6>
-      <br />
-      <h3>만드는 법</h3>
-      <div class="comm" id="content">
-        <p>1. {{ data.contents1 }}</p>
-        <p>2. {{ data.contents2 }}</p>
-        <p>3. {{ data.contents3 }}</p>
-        <p>4. {{ data.contents4 }}</p>
-        <p>5. {{ data.contents5 }}</p>
-      </div>
+        <div class="container">
+            <p>
+                <span style="font-size: 200%;">{{data.title}}</span>
+                <span style="font-size: 100%;">by {{ data.nickname }} </span>
+            </p>
+            <img src="{{ data.image }}" class="img">
+        </div>
+        <h3>재료</h3>
+        <h6>{{ data.ingredient }}</h6>
+        <br>
+        <h3>만드는 법</h3>
+        <div class="comm" id="content">
+            <P>1. {{ data.contents1 }}</P>
+            <P>2. {{ data.contents2 }}</P>
+            <P>3. {{ data.contents3 }}</P>
+            <P>4. {{ data.contents4 }}</P>
+            <P>5. {{ data.contents5 }}</P>
+        </div>
     </div>
 
     <div class="content">
