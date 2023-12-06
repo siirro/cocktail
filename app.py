@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, redirect
 import os
 from flask_sqlalchemy import SQLAlchemy
 
@@ -60,9 +60,52 @@ with app.app_context():
     db.create_all()
 
 
-@app.route("/join", methods=("GET", "POST"))
-def join():
+
+####### 조인/로그인
+
+@app.route('/checkId', methods=['POST'])
+def checkId() :
+    member_id = request.json['member_id']
+    id = Member.query.filter_by(member_id=member_id).first()
+
+    if id is not None :
+        return jsonify({"status" : "exist"})
+    else :
+        return jsonify({"status" : "available"})
+
+@app.route("/join", methods=["GET"])
+def ddd():
     return render_template("join.html")
+
+@app.route("/join", methods=["POST"])
+def join():
+    
+    member_id = request.form.get("member_id")
+    pw = request.form.get("pw")
+    nickname = request.form.get("nickname")
+
+    member = Member(
+            member_id=member_id,
+            pw=pw,
+            nickname=nickname
+        )
+    db.session.add(member)    
+    db.session.commit()
+
+    # return redirect('/')
+
+    return render_template("join.html")
+
+@app.route("/login", methods=["GET"])
+def dddd():
+    return render_template("join.html")
+
+@app.route("/login", methods=["POST"])
+def login():
+    print("로그인서밋")
+    return render_template("join.html")
+
+######### 조인/로그인 끝
 
 
 @app.route("/save")
