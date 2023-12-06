@@ -11,23 +11,61 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
 db = SQLAlchemy(app)
 
 
-class Recipe(db.Model):
-    recipe_num = db.Column(db.Integer, primary_key=True)
-    id = db.Column(db.String, nullable=False)
-    title = db.Column(db.String, nullable=False)
-    image_url = db.Column(db.String, nullable=False)
-    content = db.Column(db.String, nullable=False)
-    ingredient = db.Column(db.String, nullable=False)
+class Member(db.Model):
+    mNum = db.Column(db.Integer, primary_key=True, index=True)
+    member_id = db.Column(db.String, nullable=False)
+    pw = db.Column(db.String, nullable=False)
+    nickname = db.Column(db.String, nullable=False)
 
     def __repr__(self):
-        return f"{self.artist} {self.title} 추천 by {self.username}"
+        return
+
+
+class Recipe(db.Model):
+    rNum = db.Column(db.Integer, primary_key=True, index=True)
+    member_id = db.Column(db.ForeignKey("member.mNum"), nullable=False)
+    title = db.Column(db.String, nullable=False)
+    image = db.Column(db.String, nullable=False)
+    ingredient = db.Column(db.String, nullable=False)
+    contents1 = db.Column(db.String, nullable=False)
+    contents2 = db.Column(db.String, nullable=True)
+    contents3 = db.Column(db.String, nullable=True)
+    contents4 = db.Column(db.String, nullable=True)
+    contents5 = db.Column(db.String, nullable=True)
+
+    def __repr__(self):
+        return
+
+
+class Comment(db.Model):
+    cNum = db.Column(db.Integer, primary_key=True, index=True)
+    rNum = db.Column(db.ForeignKey("recipe.rNum"), nullable=False)
+    member_id = db.Column(db.ForeignKey("member.mNum"), nullable=False)
+    contents = db.Column(db.String, nullable=False)
+
+    def __repr__(self):
+        return
+
+
+class Heart(db.Model):
+    hNum = db.Column(db.Integer, primary_key=True, index=True)
+    member_id = db.Column(db.ForeignKey("member.mNum"), nullable=False)
+    rNum = db.Column(db.ForeignKey("recipe.rNum"), nullable=False)
+
+    def __repr__(self):
+        return
 
 
 with app.app_context():
     db.create_all()
 
 
-@app.route("/posting")
+@app.route("/join", methods=("GET", "POST"))
+def join():
+    return render_template("join.html")
+
+
+@app.route("/save")
 def posting():
     return render_template("posting.html")
 
