@@ -170,21 +170,5 @@ def delete(recipeNum):
     return redirect(url_for("main.html"))
 
 
-@app.route("/show")
-def show():
-    # uery = db.session.query(Member)
-    # query = uery.join(Recipe, Member.mNum == Recipe.member_id)
-
-    joined_data = (
-        db.session.query(Member, Recipe)
-        .join(Recipe, Member.mNum == Recipe.member_id)
-        .first()
-    )
-    print(joined_data)
-
-    # recipe1 = Recipe.query.first()
-    return render_template("showcocktail.html", data=joined_data)
-
-
 if __name__ == "__main__":
     app.run(debug=True)
