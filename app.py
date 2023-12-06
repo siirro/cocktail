@@ -73,11 +73,16 @@ def join():
 
 @app.route("/show")
 def show():
-    query = db.session.query(Member)
-    query = query.join(Recipe, Member.mNum == Recipe.member_id)
-
-    recipe1 = Recipe.query.first()
-    return render_template("showcocktail.html", data=recipe1)
+    # uery = db.session.query(Member)
+    # query = uery.join(Recipe, Member.mNum == Recipe.member_id)
+    joined_data = (
+        db.session.query(Member, Recipe)
+        .join(Recipe, Member.mNum == Recipe.member_id)
+        .first()
+    )
+    print(joined_data)
+    # recipe1 = Recipe.query.first()
+    return render_template("showcocktail.html", data=joined_data)
 
 
 @app.route("/save", methods=["GET", "POST"])
