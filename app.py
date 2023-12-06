@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, jsonify
 import os
 from flask_sqlalchemy import SQLAlchemy
 
@@ -74,8 +74,41 @@ def main():
         return render_template("main.html", data=query)
 
 
-@app.route("/join", methods=("GET", "POST"))
+@app.route("/checkId", methods=["POST"])
+def checkId():
+    member_id = request.json["member_id"]
+    id = Member.query.filter_by(member_id=member_id).first()
+    if id is not None:
+        return jsonify({"status": "exist"})
+    else:
+        return jsonify({"status": "available"})
+
+
+@app.route("/join", methods=["GET"])
+def ddd():
+    return render_template("join.html")
+
+
+@app.route("/join", methods=["POST"])
 def join():
+    member_id = request.form.get("member_id")
+    pw = request.form.get("pw")
+    nickname = request.form.get("nickname")
+    member = Member(member_id=member_id, pw=pw, nickname=nickname)
+    db.session.add(member)
+    db.session.commit()
+    # return redirect('/')
+    return render_template("join.html")
+
+
+@app.route("/login", methods=["GET"])
+def dddd():
+    return render_template("join.html")
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    print("로그인서밋")
     return render_template("join.html")
 
 
@@ -136,17 +169,21 @@ def delete(recipeNum):
 
     return redirect(url_for("main.html"))
 
-@app.route('/show')
+
+@app.route("/show")
 def show():
-    
-    # uery = db.session.query(Member) 
+    # uery = db.session.query(Member)
     # query = uery.join(Recipe, Member.mNum == Recipe.member_id)
 
-    joined_data = db.session.query(Member, Recipe).join(Recipe, Member.mNum == Recipe.member_id).first()
+    joined_data = (
+        db.session.query(Member, Recipe)
+        .join(Recipe, Member.mNum == Recipe.member_id)
+        .first()
+    )
     print(joined_data)
 
     # recipe1 = Recipe.query.first()
-    return render_template('showcocktail.html',data = joined_data)
+    return render_template("showcocktail.html", data=joined_data)
 
 
 if __name__ == "__main__":
