@@ -64,7 +64,14 @@ with app.app_context():
 @app.route("/")
 def main():
     query = Recipe.query.all() + Member.query.all()
-    return render_template("main.html", data=query)
+    searched_word = request.args.get("words")
+    if searched_word:
+        word = Recipe.query(searched_word).all()
+        db.session.commit()
+        return render_template("main.html", data=word)
+    else:
+        word = []
+        return render_template("main.html", data=query)
 
 
 @app.route("/join", methods=("GET", "POST"))
