@@ -32,7 +32,7 @@
   <body>
     <!--포스팅 폼 입력 div-->
     <div class="container">
-      <form id="recipeForm">
+      <form action="{{ url_for('recipe_save') }}" method="POST"">
         <!--레시피 이름 입력-->
         <div class="input-group mb-3">
           <span class="input-group-text" id="recipe-name">레시피 이름</span>
@@ -42,6 +42,7 @@
             placeholder="칵테일 레시피 이름을 입력해주세요."
             aria-label="cocktail-name"
             aria-describedby="basic-addon1"
+            name = "title"
           />
         </div>
 
@@ -54,6 +55,7 @@
             placeholder="칵테일 사진의 URL을 넣어주세요."
             aria-label="image-url"
             aria-describedby="basic-addon1"
+            name="image"
           />
         </div>
 
@@ -69,6 +71,7 @@
               rows="4"
               placeholder="필요한 재료를 작성해주세요.
             "
+            name="ingredient"
             ></textarea>
           </div>
         </div>
@@ -84,6 +87,7 @@
               placeholder="레시피를 입력해주세요."
               aria-label="Recipe-manual1"
               aria-describedby="basic-addon1"
+              name="contents1"
             />
           </div>
           <div class="input-group mb-3">
@@ -94,6 +98,7 @@
               placeholder="레시피를 입력해주세요."
               aria-label="Recipe-manual2"
               aria-describedby="basic-addon1"
+              name="contents2"
             />
           </div>
           <div class="input-group mb-3">
@@ -104,6 +109,7 @@
               placeholder="레시피를 입력해주세요."
               aria-label="Recipe-manual3"
               aria-describedby="basic-addon1"
+              name="contents3"
             />
           </div>
           <div class="input-group mb-3">
@@ -114,6 +120,7 @@
               placeholder="레시피를 입력해주세요."
               aria-label="Recipe-manual4"
               aria-describedby="basic-addon1"
+              name="contents4"
             />
           </div>
           <div class="input-group mb-3">
@@ -124,18 +131,19 @@
               placeholder="레시피를 입력해주세요."
               aria-label="Recipe-manual5"
               aria-describedby="basic-addon1"
+              name="contents5"
             />
           </div>
         </div>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-success" id="submitBtn">
+            제출하기
+          </button>
+          <button type="button" class="btn btn-danger" id="cancleBtn">
+            취소
+          </button>
+        </div>
       </form>
-      <div class="d-flex justify-content-end">
-        <button type="button" class="btn btn-success" id="submitBtn">
-          제출하기
-        </button>
-        <button type="button" class="btn btn-danger" id="cancleBtn">
-          취소
-        </button>
-      </div>
     </div>
   </body>
 </html>
