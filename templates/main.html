@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <title>Main page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <style>
@@ -14,6 +14,10 @@
             font-family: 'Gowun Dodum', sans-serif;
         }
 
+        .buttons {
+            padding-right: 20px;
+        }
+
         .words {
             display: flex;
             flex-direction: column;
@@ -21,7 +25,8 @@
             text-align: center;
             /* letter-spacing: 1em; */
         }
-        .searchBar{
+
+        .searchBar {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -49,26 +54,29 @@
         <!-- main menu의 navbar -->
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
                 <a class="navbar-brand">칵테일 사랑</a>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <div class="navbar-collapse" id="navbarTogglerDemo03">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page">칵테일 레시피 모음집</a>
                         </li>
                     </ul>
+
                     <form class="d-flex" role="login" data-bs-toggle="modal">
                         <button class="btn btn-secondary" data-bs-toggle="modal"
                             data-bs-target="#로그인 화면 모달">로그인</button>
                     </form>
+
+                    <form class="d-flex" role="login" data-bs-toggle="modal">
+                        <div class="buttons">
+                            <button class="btn btn-outline-secondary">닉네임</button>
+                            <button class="btn btn-secondary"  data-bs-target="#로그아웃 화면 모달">로그아웃</button>
+                        </div>
+                    </form>
+
                 </div>
             </div>
         </nav>
-        >
 
         <div class="background">
             <br><br><br><br><br><br>
@@ -88,22 +96,22 @@
             </div>
             <br><br><br><br><br>
             <div class="row row-cols-1 row-cols-md-4 g-4 mx-auto w-75 pb-5">
-                {% for cocktail in data %}
+            {% for cocktail in data %}
                 <div class="col">
                     <div class="card h-100">
-                        <img src="{{cocktail.image_url}}" class="card-img-top" alt="..." name="image_url">
+                        <img src="{{cocktail.image}}" class="card-img-top" alt="..." name="image_url">
                         <div class="card-body">
                             <h5 class="card-title" name="title">{{cocktail.title}}</h5>
-                            <p class="card-text" name="username">추천 by {{cocktail.name}}</p>
-                            <p>하트 모양 {{contail.likes}}</p>
+                            <p class="card-text" name="username">추천 by 다른 곳</p>
+                            <p>하트 모양 </p>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
+            {% endfor %}
             </div><br><br><br>
             <div class="searchBar">
                 <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="words">
                     <button class="btn btn-outline-secondary" type="submit">검색</button>
                 </form>
             </div>
@@ -112,10 +120,6 @@
         </div>
 
     </div>
-
 </body>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-    crossorigin="anonymous"></script>
 
 </html>
