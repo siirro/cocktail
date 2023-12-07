@@ -167,6 +167,7 @@ def show(recipeNum):
     instances = (
         db.session.query(Recipe, Member)
         .join(Member, Member.mNum == Recipe.member_id)
+        .filter(Recipe.rNum == recipeNum)
         .all()
     )
 
