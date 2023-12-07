@@ -92,45 +92,78 @@
 
     <div class="content">
       <div class="container">
-        {% for recipe, member in data %}
+        {% for recipe_instance, member_instance in data %}
         <p>
-          <span style="font-size: 200%">{{ recipe.title }}</span>
-          <span style="font-size: 100%">by {{ member.nickname }} </span>
+          <span style="font-size: 200%">{{ recipe_instance.title }}</span>
+          <span style="font-size: 100%"
+            >by {{ member_instance.nickname }}
+          </span>
         </p>
-        <img src="{{ recipe.image }}" class="img" />
+        <img src="{{ recipe_instance.image }}" class="img" />
       </div>
       <h3>재료</h3>
-      <h6>{{ recipe.ingredient }}</h6>
+      <h6>{{ recipe_instance.ingredient }}</h6>
       <br />
       <h3>만드는 법</h3>
       <div class="comm" id="content">
-        <p>1. {{ recipe.contents1 }}</p>
-        <p>2. {{ recipe.contents2 }}</p>
-        <p>3. {{ recipe.contents3 }}</p>
-        <p>4. {{ recipe.contents4 }}</p>
-        <p>5. {{ recipe.contents5 }}</p>
+        <p>1. {{ recipe_instance.contents1 }}</p>
+        <p>2. {{ recipe_instance.contents2 }}</p>
+        <p>3. {{ recipe_instance.contents3 }}</p>
+        <p>4. {{ recipe_instance.contents4 }}</p>
+        <p>5. {{ recipe_instance.contents5 }}</p>
       </div>
+      <!-- 수정 버튼 -->
+      <a
+        href="{{ url_for('edit', recipeNum=recipe_instance.rNum) }}"
+        class="btn btn-primary"
+        >수정</a
+      >
+      <!-- 삭제 버튼 -->
+      <a
+        href="{{ url_for('delete', recipeNum=recipe_instance.rNum) }}"
+        class="btn btn-danger"
+        >삭제</a
+      >
       {% endfor %}
     </div>
 
     <div class="content">
       <div class="form-floating comment">
-        <div>
-          <textarea
-            id="comment"
-            class="form-control"
-            placeholder="코멘트를 남겨주세요"
-          ></textarea>
-        </div>
-
-        <button
-          onclick=""
-          type="button"
-          class="btn btn-success"
-          style="margin-top: 10px; margin-left: 435px"
+        <form
+          action="{{ url_for('comment', recipeNum=recipe.rNum) }}"
+          method="POST"
         >
-          POST
-        </button>
+          <div>
+            <textarea
+              name="comment"
+              id="comment"
+              class="form-control"
+              placeholder="코멘트를 남겨주세요"
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-success"
+            style="margin-top: 10px"
+          >
+            댓글 추가
+          </button>
+        </form>
+      </div>
+      <div class="comments">
+        <h3>댓글 목록</h3>
+        <ul>
+          {% for comment in comments %}
+          <li>
+            {{ comment.contents }}
+            <a
+              href="{{ url_for('delete_comment', comment_id=comment.cNum) }}"
+              class="btn btn-danger btn-sm"
+              >삭제</a
+            >
+          </li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
   </body>

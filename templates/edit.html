@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cocktail Recipe</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <style>
+      .container {
+        margin: 50px auto;
+        width: 70%;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>레시피 수정</h2>
+      <form action="{{ url_for('edit', recipeNum=recipe.rNum) }}" method="POST">
+        <div class="form-group">
+          <label for="title">레시피 이름</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            value="{{ recipe.title }}"
+            placeholder="레시피 제목"
+          />
+        </div>
+        <div class="form-group">
+          <label for="image">사진 URL</label>
+          <input
+            type="text"
+            class="form-control"
+            id="image"
+            name="image"
+            value="{{ recipe.image }}"
+            placeholder="칵테일 사진의 URL을 넣어주세요."
+          />
+        </div>
+        <div class="form-group">
+          <label for="ingredient">필요한 재료</label>
+          <textarea
+            class="form-control"
+            id="ingredient"
+            name="ingredient"
+            rows="3"
+            placeholder="필요한 재료를 작성해주세요."
+          >
+{{ recipe.ingredient }}</textarea
+          >
+        </div>
+        <div class="form-group">
+          <label for="contents1">칵테일 제작 순서 - 1</label>
+          <input
+            type="text"
+            class="form-control"
+            id="contents1"
+            name="contents1"
+            value="{{ recipe.contents1 }}"
+            placeholder="레시피를 입력해주세요."
+          />
+        </div>
+        <div class="form-group">
+          <label for="contents2">칵테일 제작 순서 - 2</label>
+          <input
+            type="text"
+            class="form-control"
+            id="contents2"
+            name="contents2"
+            value="{{ recipe.contents2 }}"
+            placeholder="레시피를 입력해주세요."
+          />
+        </div>
+        <div class="form-group">
+          <label for="contents3">칵테일 제작 순서 - 3</label>
+          <input
+            type="text"
+            class="form-control"
+            id="contents3"
+            name="contents3"
+            value="{{ recipe.contents3 }}"
+            placeholder="레시피를 입력해주세요."
+          />
+        </div>
+        <div class="form-group">
+          <label for="contents4">칵테일 제작 순서 - 4</label>
+          <input
+            type="text"
+            class="form-control"
+            id="contents4"
+            name="contents4"
+            value="{{ recipe.contents4 }}"
+            placeholder="레시피를 입력해주세요."
+          />
+        </div>
+        <div class="form-group">
+          <label for="contents5">칵테일 제작 순서 - 5</label>
+          <input
+            type="text"
+            class="form-control"
+            id="contents5"
+            name="contents5"
+            value="{{ recipe.contents5 }}"
+            placeholder="레시피를 입력해주세요."
+          />
+        </div>
+        <button type="submit" class="btn btn-success">수정하기</button>
+        <a
+          href="{{ url_for('show', recipeNum=recipe.rNum) }}"
+          class="btn btn-secondary"
+          >취소</a
+        >
+      </form>
+    </div>
+  </body>
+</html>

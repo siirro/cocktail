@@ -37,7 +37,7 @@ db = SQLAlchemy(app)
 
 class Member(db.Model):
     mNum = db.Column(db.Integer, primary_key=True, index=True)
-    member_id = db.Column(db.String, nullable=False)
+    member_id = db.Column(db.String, nullable=False, unique=True)
     pw = db.Column(db.String, nullable=False)
     nickname = db.Column(db.String, nullable=False)
 
@@ -174,18 +174,49 @@ def logout():
     return resp
 
 
-@app.route("/show")
-def show():
-    # uery = db.session.query(Member)
-    # query = uery.join(Recipe, Member.mNum == Recipe.member_id)
-    joined_data = (
-        db.session.query(Member, Recipe)
-        .join(Recipe, Member.mNum == Recipe.member_id)
-        .first()
+@app.route("/show/<int:recipeNum>")
+def show(recipeNum):
+    recipe = Recipe.query.filter_by(rNum=recipeNum).first()
+    member = Member.query.filter_by(mNum=recipe.member_id).first()
+    comments = Comment.query.filter_by(rNum=recipeNum).all()
+
+    instances = (
+        db.session.query(Recipe, Member)
+        .join(Member, Member.mNum == Recipe.member_id)
+        .all()
     )
-    print(joined_data)
-    # recipe1 = Recipe.query.first()
-    return render_template("showcocktail.html", data=joined_data)
+
+    return render_template(
+        "showcocktail.html", data=instances, recipe=recipe, comments=comments
+    )
+
+
+@app.route("/comment/<int:recipeNum>", methods=["POST"])
+def comment(recipeNum):
+    if request.method == "POST":
+        comment_text = request.form.get("comment")  # POST 요청에서 댓글 텍스트 가져오기
+        # 실제 recipeNum을 사용하여 댓글에 해당하는 Recipe를 찾는다.
+        comment = Comment(
+            rNum=recipeNum,  # 해당 댓글이 어떤 레시피에 속하는지 식별
+            member_id="1",  # 여기에는 실제 사용자 ID를 넣음
+            contents=comment_text,
+        )
+        db.session.add(comment)  # 새 댓글을 데이터베이스에 추가
+        db.session.commit()  # 변경 사항 저장
+
+        return redirect(url_for("show", recipeNum=recipeNum))
+
+
+@app.route("/delete_comment/<int:comment_id>")
+def delete_comment(comment_id):
+    comment_to_delete = Comment.query.get(comment_id)
+
+    if comment_to_delete:
+        # 해당 댓글을 데이터베이스에서 삭제
+        db.session.delete(comment_to_delete)
+        db.session.commit()
+
+    return redirect(url_for("show", recipeNum=comment_to_delete.rNum))
 
 
 @app.route("/save", methods=["GET", "POST"])
@@ -222,10 +253,37 @@ def recipe_save():
 @app.route("/delete/<int:recipeNum>")
 def delete(recipeNum):
     recipe_delete = Recipe.query.get(recipeNum)
+
     if recipe_delete:
+        comments_to_delete = Comment.query.filter_by(rNum=recipeNum).all()
+        for comment in comments_to_delete:
+            db.session.delete(comment)
+
         db.session.delete(recipe_delete)
         db.session.commit()
-    return redirect(url_for("main.html"))
+
+    return redirect(url_for("main"))
+
+
+@app.route("/edit/<int:recipeNum>", methods=["GET", "POST"])
+def edit(recipeNum):
+    recipe = Recipe.query.get(recipeNum)
+
+    if request.method == "POST":
+        # 폼에서 받은 데이터로 기존 데이터 업데이트
+        recipe.title = request.form.get("title")
+        recipe.image = request.form.get("image")
+        recipe.ingredient = request.form.get("ingredient")
+        recipe.contents1 = request.form.get("contents1")
+        recipe.contents2 = request.form.get("contents2")
+        recipe.contents3 = request.form.get("contents3")
+        recipe.contents4 = request.form.get("contents4")
+        recipe.contents5 = request.form.get("contents5")
+
+        db.session.commit()  # 변경 사항 저장
+        return redirect(url_for("show", recipeNum=recipeNum))  # 수정 후 목록 페이지로 이동
+
+    return render_template("edit.html", recipe=recipe)
 
 
 if __name__ == "__main__":
