@@ -3,14 +3,8 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 import hashlib
 from datetime import timedelta
-import jwt
-from flask_jwt_extended import (
-    create_access_token,
-    JWTManager,
-    jwt_required,
-    get_jwt_identity,
-    unset_jwt_cookies,
-)
+from flask_jwt_extended import JWTManager
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -101,7 +95,7 @@ def main():
             db.session.query(Recipe, Member)
             .join(Member, Member.mNum == Recipe.member_id)
             .filter(Recipe.title == searched_word)
-            .all()     
+            .all()
         )
         db.session.commit()
         return render_template("main.html", data=filter_list, is_admin=is_admin)
@@ -157,6 +151,15 @@ def login():
         return jsonify({"result": "success"})
     else:
         return jsonify({"result": "로그인에 실패하셨습니다."})
+
+
+@app.route("/isLogin", methods=["GET"])
+def isLogin():
+    if "member_id" in session:
+        return jsonify({"message": "post"})
+        # return render_template('posting.html')
+    else:
+        return jsonify({"message": "로그인 해주세요"}), 403
 
 
 @app.route("/logout")

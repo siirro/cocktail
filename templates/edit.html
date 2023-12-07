@@ -11,6 +11,11 @@
       crossorigin="anonymous"
     />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
+
+      * {
+        font-family: "Gowun Dodum", sans-serif;
+      }
       .container {
         margin: 50px auto;
         width: 70%;
@@ -21,6 +26,7 @@
     </style>
   </head>
   <body>
+    {% include 'navbar.html' %}
     <div class="container">
       <h2>레시피 수정</h2>
       <form action="{{ url_for('edit', recipeNum=recipe.rNum) }}" method="POST">

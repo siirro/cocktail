@@ -13,7 +13,10 @@
   </head>
 
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
+
     * {
+      font-family: "Gowun Dodum", sans-serif;
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -78,17 +81,7 @@
       crossorigin="anonymous"
     ></script>
     <!-- navbar -->
-    <nav class="navbar bg-body-tertiary">
-      <div class="container-fluid">
-        <a class="navbar-brand">Cocktail</a>
-        <form class="d-flex" role="search">
-          <a class="nav-link active" aria-current="page" href="#">닉네임</a>
-          <button class="btn btn-outline-success" type="submit">
-            로그아웃
-          </button>
-        </form>
-      </div>
-    </nav>
+    {% include 'navbar.html' %}
 
     <div class="content">
       <div class="container">
