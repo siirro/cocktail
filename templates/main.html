@@ -1,12 +1,10 @@
-<!DOCTYPE html>
+<!Doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Main Page</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
 
@@ -47,78 +45,289 @@
             background-attachment: fixed;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
 </head>
 
-<body>
+<body data-bs-theme="white">
     <div class="background-banner">
-        <!-- main menu의 navbar -->
+        <!-- 상단 navbar -->
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">칵테일 사랑</a>
+
                 <div class="navbar-collapse" id="navbarTogglerDemo03">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page">칵테일 레시피 모음집</a>
                         </li>
                     </ul>
-
-                    <form class="d-flex" role="login" data-bs-toggle="modal">
-                        <button class="btn btn-secondary" data-bs-toggle="modal"
-                            data-bs-target="#로그인 화면 모달">로그인</button>
-                    </form>
-
-                    <form class="d-flex" role="login" data-bs-toggle="modal">
-                        <div class="buttons">
-                            <button class="btn btn-outline-secondary">닉네임</button>
-                            <button class="btn btn-secondary"  data-bs-target="#로그아웃 화면 모달">로그아웃</button>
-                        </div>
-                    </form>
-
+                    {% if is_admin %}
+                    <div id="logout-container">
+                        <form class="d-flex" role="login" data-bs-toggle="modal">
+                            <div class="buttons">
+                                <button class="btn btn-outline-secondary">{{data.nickname}}</button>
+                                <button class="btn btn-secondary" data-bs-target="#로그아웃 화면 모달">로그아웃</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% else %}  
+                    <div id="login-container">
+                        <form class="d-flex" role="login" data-bs-toggle="modal">
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                data-bs-toggle="modal" data-bs-target="#exampleModal">로그인</button>
+                        </form>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </nav>
 
-        <div class="background">
-            <br><br><br><br><br><br>
-            <div class="words">
-                <h1>당신만의 칵테일 여행을 시작해보세요!</h1>
-            </div>
-            <br><br><br>
-            <div class="words">
-                <h3>슬기로운 한잔</h3>
-            </div>
-            <br><br><br>
-            <div class="words">
-                <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
-                    data-bs-target="로그인이 필요 요청 모달 or (로그인 시) 포스팅 페이지">
-                    포스팅하기
-                </button>
-            </div>
-            <br><br><br><br><br>
-            <div class="row row-cols-1 row-cols-md-4 g-4 mx-auto w-75 pb-5">
-            {% for cocktail in data %}
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="{{cocktail.image}}" class="card-img-top" alt="..." name="image_url">
+        <br><br><br><br><br><br>
+        <div class="words">
+            <h1>당신만의 칵테일 여행을 시작해보세요!</h1>
+        </div>
+        <br><br><br>
+        <div class="words">
+            <h3>슬기로운 한잔</h3>
+        </div>
+        <br><br><br>
+        <div class="words">
+            <button type="mainButton" class="btn btn-secondary btn-lg" onclick="onClicked(); return false;">
+                <a class="nav-link text-white">포스팅하기</a>
+            </button>
+        </div>
+        <br><br><br><br><br>
+        <div class="row row-cols-1 row-cols-md-4 g-4 mx-auto w-75 pb-5">
+            {% for recipe, member in data %}
+            <div class="col">
+                <div class="card h-100">
+                    <a class="nav-link text-black" href="세부페이지로 넘어가는 주소">
+                        <img src="{{recipe.image}}" class="card-img-top" alt="..." name="image_url">
                         <div class="card-body">
-                            <h5 class="card-title" name="title">{{cocktail.title}}</h5>
-                            <p class="card-text" name="username">추천 by 다른 곳</p>
+                            <h5 class="card-title" name="title">{{recipe.title}}</h5>
+                            <p class="card-text" name="username">추천 by {{member.nickname}}</p>
                             <p>하트 모양 </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div><br><br><br>
+        <div class="searchBar">
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                    name="searched_word">
+                <button class="btn btn-outline-secondary" type="submit">검색</button>
+            </form>
+
+            <!-- 로그인 모달 -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content rounded-4 shadow">
+                        <div class="modal-header p-5 pb-4 border-bottom-0">
+                            <h1 class="fw-bold mb-0 fs-2">로그인</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body p-5 pt-0">
+                            <form class="" action="/login" method="POST">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control rounded-3" name="member_id" placeholder="">
+                                    <label for="floatingInput">ID</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control rounded-3" name="pw" placeholder="">
+                                    <label for="floatingPassword">Password</label>
+                                </div>
+
+                                <button class="w-100 mb-2 btn btn-lg rounded-3 btn-warning" type="submit">로그인</button>
+
+                                <hr class="my-4">
+                                <h2 class="fs-5 fw-bold mb-3">아직 저희 회원이 아니신가요?</h2>
+                                <button type="button" class="w-100 py-2 mb-2 btn btn-outline-secondary rounded-3"
+                                    data-bs-toggle="modal" data-bs-target="#exampleModal2">
+                                    회원가입하러 가기
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
-            </div><br><br><br>
-            <div class="searchBar">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="words">
-                    <button class="btn btn-outline-secondary" type="submit">검색</button>
-                </form>
-                <div></div>
-        <div class="container">
+            </div>
+
+            <!-- 회원가입 모달 -->
+            <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModal2Label"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content rounded-4 shadow">
+                        <div class="modal-header p-5 pb-4 border-bottom-0">
+                            <h1 class="fw-bold mb-0 fs-2">회원가입</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-5 pt-0">
+                            <form id="joinForm" action="/join" method="POST">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control rounded-3" id="member_id" name="member_id"
+                                        placeholder="">
+                                    <label for="floatingInput">ID</label>
+                                    <span id="check_id"
+                                        style="position: absolute; top: 50%; right: 20px; transform: translateY(-50%);"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control rounded-3" id="pw" name="pw"
+                                        placeholder="">
+                                    <label for="floatingPassword">Password</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control rounded-3" id="pwCheck" placeholder="">
+                                    <label for="floatingPassword">Password Check</label>
+                                    <span id="check_pw"
+                                        style="position: absolute; top: 50%; right: 20px; transform: translateY(-50%);"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control rounded-3" id="nickname" name="nickname"
+                                        placeholder="">
+                                    <label for="floatingInput">Nickname</label>
+                                </div>
+
+                                <button class="w-100 mb-2 btn btn-lg rounded-3 btn-warning" type="button"
+                                    onclick="join()">회원가입</button>
+
+                                <hr class="my-4">
+                                <h2 class="fs-5 fw-bold mb-3">이미 저희 회원이시라면?</h2>
+                                <button type="button" class="w-100 py-2 mb-2 btn btn-outline-secondary rounded-3"
+                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    로그인하러 가기
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </div>
+        <script>
+            const inputId = document.getElementById('member_id')
+            const check = document.getElementById('check_id')
+
+            const inputPw = document.getElementById('pw')
+            const inputPwc = document.getElementById('pwCheck')
+            const checkp = document.getElementById('check_pw')
+            const inputnickname = document.getElementById('nickname')
+
+            // 회원가입 버튼 클릭
+            function join() {
+                if (inputId.value !== '' && inputPw.value !== '' && inputPwc.value !== '' && inputnickname.value !== '') {
+
+
+                    document.getElementById('joinForm').submit()
+                    alert("회원가입완료")
+
+                } else {
+                    alert("비어있는 칸이 있습니다.");
+                }
+
+
+            }
+
+            // PW 일치체크
+            inputPw.addEventListener('keyup', function () {
+                if (inputPw.value == inputPwc.value) {
+                    checkp.innerHTML = `<svg style="color: green;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                                            </svg>`
+                } else {
+                    checkp.innerHTML = `<svg style="color: red;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                            </svg>`
+                }
+                if (inputPw.value == '') {
+                    checkp.innerHTML = ``
+                }
+            })
+
+            inputPwc.addEventListener('keyup', function () {
+                if (inputPw.value == inputPwc.value) {
+                    checkp.innerHTML = `<svg style="color: green;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                                            </svg>`
+                } else {
+                    checkp.innerHTML = `<svg style="color: red;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                            </svg>`
+                }
+                if (inputPwc.value == '') {
+                    checkp.innerHTML = ``
+                }
+            })
+
+
+
+            // ID 중복체크        
+            inputId.addEventListener('keyup', function () {
+                const member_id = this.value;
+
+                fetch('/checkId', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ member_id: member_id })
+                }).then(response => response.json()).then(data => {
+
+                    if (data.status === 'exist') {
+                        check.innerHTML = `<svg style="color: red;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                            </svg>`
+                    }
+                    // 사용가능
+                    else {
+                        check.innerHTML = `<svg style="color: green;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                                            </svg>`
+                    }
+                    //키업하다가 빈칸됐을때 아이콘삭제
+                    if (member_id === '') {
+                        check.innerHTML = ``
+                    }
+                })
+                // ID 중복체크 끝
+            });
+
+            function onClicked() {
+                let signed = "";
+                if (signed == "") {
+                    alert("로그인 후 이용해주세요");
+                } else {
+                    location.replace("/save")
+                }
+            }
+
+            function logoutSate() {
+                document.getElementById('login-container').style.display = 'none'
+                document.getElementById('logout-container').style.display = 'block'
+            }
+            function loginSate() {
+                document.getElementById('login-container').style.display = 'block'
+                document.getElementById('logout-container').style.display = 'none'
+            }
+
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"></script>
 </body>
 
 </html>
