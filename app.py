@@ -151,19 +151,18 @@ def dddd():
 
 @app.route("/login", methods=["POST"])
 def login():
-    member_id = request.form.get("member_id")
-    pw = request.form.get("pw")
+    member_id = request.json.get("member_id")
+    pw = request.json.get("pw")
     pw_hash = hashlib.sha256(pw.encode("utf-8")).hexdigest()
     result = Member.query.filter_by(member_id=member_id, pw=pw_hash).first()
     if result is not None:
-        # session[result.mNum] = result.mNum
-        # id = session.get(result.mNum)
         session["member_id"] = member_id
         id = session.get("member_id")
         print(id)
-        return redirect("/")
+        # return redirect("../")
+        return jsonify({"message": "ok"})
     else:
-        return jsonify({"result": "로그인에 실패하셨습니다."})
+        return jsonify({"message": "아이디와 비밀번호를 확인해주세요."}), 403
 
 
 @app.route("/isLogin", methods=["GET"])
@@ -172,11 +171,12 @@ def isLogin():
         return jsonify({"message": "post"})
         # return render_template('posting.html')
     else:
-        return jsonify({"message": "로그인 해주세요"}), 403
+        return jsonify({"message": "로그인 해주세요"}), 405
 
 
 @app.route("/logout")
 def logout():
+    print("지워져라")
     if "member_id" in session:
         session.pop("member_id")
     # id = session.get('member_id')
