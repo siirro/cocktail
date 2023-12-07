@@ -101,7 +101,7 @@ def main():
             db.session.query(Recipe, Member)
             .join(Member, Member.mNum == Recipe.member_id)
             .filter(Recipe.title == searched_word)
-            .all()
+            .all()     
         )
         db.session.commit()
         return render_template("main.html", data=filter_list, is_admin=is_admin)
