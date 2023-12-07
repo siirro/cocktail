@@ -88,15 +88,20 @@ with app.app_context():
 
 @app.route("/")
 def main():
-    query = Recipe.query.all() + Member.query.all()
-    searched_word = request.args.get("words")
+    # 로그인 상태를 관리하는 함수: is_admin
+    is_admin = False
+    query = (
+        db.session.query(Recipe, Member)
+        .join(Member, Member.mNum == Recipe.member_id)
+        .all()
+    )
+    searched_word = request.args.get("searched_word")
     if searched_word:
-        word = Recipe.query(searched_word).all()
+        filter_list = Recipe.query.filter_by(title=searched_word).all()
         db.session.commit()
-        return render_template("main.html", data=word)
+        return render_template("main.html", data=filter_list, is_admin=is_admin)
     else:
-        word = []
-        return render_template("main.html", data=query)
+        return render_template("main.html", data=query, is_admin=is_admin)
 
 
 @app.route("/checkId", methods=["POST"])
