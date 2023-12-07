@@ -105,19 +105,21 @@
         <p>4. {{ recipe_instance.contents4 }}</p>
         <p>5. {{ recipe_instance.contents5 }}</p>
       </div>
+
+      {% if member_instance.member_id == member_id %}
       <!-- 수정 버튼 -->
       <a
         href="{{ url_for('edit', recipeNum=recipe_instance.rNum) }}"
-        class="btn btn-primary"
+        class="btn-link btn-primary"
         >수정</a
       >
       <!-- 삭제 버튼 -->
       <a
         href="{{ url_for('delete', recipeNum=recipe_instance.rNum) }}"
-        class="btn btn-danger"
+        class="btn-link btn-danger"
         >삭제</a
       >
-      {% endfor %}
+      {% endif %} {% endfor %}
     </div>
 
     <div class="content">
@@ -148,12 +150,13 @@
         <ul>
           {% for comment in comments %}
           <li>
-            {{ comment.contents }}
+            {{ comment.contents }} {% if comment.member_id == member_id %}
             <a
               href="{{ url_for('delete_comment', comment_id=comment.cNum) }}"
               class="btn btn-danger btn-sm"
               >삭제</a
             >
+            {% endif %}
           </li>
           {% endfor %}
         </ul>
