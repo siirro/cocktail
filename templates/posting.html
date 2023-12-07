@@ -11,17 +11,24 @@
       crossorigin="anonymous"
     />
     <style>
-      .container {
-        margin: 200px 200px 20px 200px;
+      @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+      * {
+          font-family: 'Gowun Dodum', sans-serif;
       }
-      .recipe-form-title,
-      .input-ingredient-form {
+      .container {
+        margin: 0 200px 20px 200px;
+      }
+      .recipe-form,
+      .ingredient-form-title,
+      .recipe-form-title {
+        background-image: url(https://img.freepik.com/premium-vector/watercolor-background-with-colorful-ink-splash-watercolor-banner-concept_266878-248.jpg);
+        background-size:cover;
         margin-bottom: 20px;
         height: 50px;
         line-height: 50px;
         text-align: center;
         font-size: 20px;
-        border: 1px solid #cdcdcd;
         border-radius: 10px;
       }
       #cancleBtn {
@@ -30,9 +37,13 @@
     </style>
   </head>
   <body>
+    {% include 'navbar.html' %}
     <!--포스팅 폼 입력 div-->
     <div class="container">
       <form action="{{ url_for('recipe_save') }}" method="POST"">
+        <div class="recipe-form">
+          <div class="recipe-form-title">당신만의 특별한 칵테일 레시피를 공유해주세요.</div>
+        </div>
         <!--레시피 이름 입력-->
         <div class="input-group mb-3">
           <span class="input-group-text" id="recipe-name">레시피 이름</span>

@@ -3,14 +3,8 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 import hashlib
 from datetime import timedelta
-import jwt
-from flask_jwt_extended import (
-    create_access_token,
-    JWTManager,
-    jwt_required,
-    get_jwt_identity,
-    unset_jwt_cookies,
-)
+from flask_jwt_extended import JWTManager
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -88,15 +82,25 @@ with app.app_context():
 
 @app.route("/")
 def main():
-    query = Recipe.query.all() + Member.query.all()
-    searched_word = request.args.get("words")
+    # 로그인 상태를 관리하는 함수: is_admin
+    is_admin = False
+    query = (
+        db.session.query(Recipe, Member)
+        .join(Member, Member.mNum == Recipe.member_id)
+        .all()
+    )
+    searched_word = request.args.get("searched_word")
     if searched_word:
-        word = Recipe.query(searched_word).all()
+        filter_list = (
+            db.session.query(Recipe, Member)
+            .join(Member, Member.mNum == Recipe.member_id)
+            .filter(Recipe.title == searched_word)
+            .all()
+        )
         db.session.commit()
-        return render_template("main.html", data=word)
+        return render_template("main.html", data=filter_list, is_admin=is_admin)
     else:
-        word = []
-        return render_template("main.html", data=query)
+        return render_template("main.html", data=query, is_admin=is_admin)
 
 
 @app.route("/checkId", methods=["POST"])
@@ -147,6 +151,15 @@ def login():
         return jsonify({"result": "success"})
     else:
         return jsonify({"result": "로그인에 실패하셨습니다."})
+
+
+@app.route("/isLogin", methods=["GET"])
+def isLogin():
+    if "member_id" in session:
+        return jsonify({"message": "post"})
+        # return render_template('posting.html')
+    else:
+        return jsonify({"message": "로그인 해주세요"}), 403
 
 
 @app.route("/logout")
