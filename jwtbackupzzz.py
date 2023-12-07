@@ -3,6 +3,14 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 import hashlib
 from datetime import datetime, timedelta
+import jwt
+from flask_jwt_extended import (
+    create_access_token,
+    JWTManager,
+    jwt_required,
+    get_jwt_identity,
+    unset_jwt_cookies,
+)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -10,9 +18,37 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
     basedir, "database.db"
 )
 
+# cookie_secure = False
+# cookie_samesite = None
+
+# from flask_wtf.csrf import CSRFProtect
+# csrf = CSRFProtect
+
+# @app.before_request
+# def check_csrf():
+#     if not is_oauth(request):
+#         csrf.protect()
+
+SECRET_KEY = os.urandom(24)
+
+# app.config['SECRET_KEY'] = NEW_SECRET_KEY
+# SECRET_KEY = 'ASDFADFAEV'
+# 
+
+# class Config:
+#     DEBUG = True
+#     SECRET_KEY = os.urandom(24)
+
+# app.config.from_object(Config)
+# # jwt = JWTManager(app)
+# app.config["JWT_COOKIE_SECURE"] = False  # https를 통해서만 cookie가 갈수 있는지 보안망함
+# app.config["JWT_TOKEN_LOCATION"] = ["cookies"]  # 토큰을 어디서 찾을지 설정
+# app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+#     hours=2
+# )  # 토큰 만료시간 설정 기본은 30분인데 저렇게하면 두시간인가
+
 db = SQLAlchemy(app)
 
-app.secret_key = os.urandom(24)
 
 class Member(db.Model):
     mNum = db.Column(db.Integer, primary_key=True, index=True)
@@ -85,9 +121,22 @@ def checkId():
     else:
         return jsonify({"status": "available"})
 
+
+## only 로그인한 회원만!!! 사용 예시입니다.
+## @jwt_required()와 get_jwt_identity 사용하시면 됨!
+@app.route("/yoururl")
+# @jwt_required()
+def yoururl():
+    ## 현재 로그인한 회원의 id를 가져옴.
+    # member_id = get_jwt_identity()
+    # print(member_id)
+    return render_template("join.html")
+
+
 @app.route("/join", methods=["GET"])
 def ddd():
     return render_template("join.html")
+
 
 @app.route("/join", methods=["POST"])
 def join():
@@ -99,38 +148,70 @@ def join():
     db.session.add(member)
     db.session.commit()
     print("회원가입DB입력완료")
+
     
     return render_template("main.html")
+
 
 @app.route("/login", methods=["GET"])
 def dddd():
     return render_template("join.html")
 
+
 @app.route("/login", methods=["POST"])
 def login():
+    token_receive = request.cookies.get('mytoken')
+    payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    print(payload["id"])
+
     member_id = request.form.get("member_id")
     pw = request.form.get("pw")
-
     pw_hash = hashlib.sha256(pw.encode("utf-8")).hexdigest()
     result = Member.query.filter_by(member_id=member_id, pw=pw_hash).first()
-    
-    if result is not None:
-        # session[result.mNum] = result.mNum
-        # id = session.get(result.mNum)
-        session['member_id'] = member_id
-        id = session.get('member_id')
-        print(id)
-        return jsonify({'result': 'success'})
-    else:
-        return jsonify({'result': '로그인에 실패하셨습니다.'})
 
-@app.route("/logout")
-def logout():
-    if 'member_id' in session:
-        session.pop('member_id')
-    # id = session.get('member_id')
-    # print(id)
-    return render_template("main.html")
+    if result is not None:
+
+        payload = {
+        'id': member_id,
+        'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    
+        # access_token = create_access_token(identity=member_id)
+        # print(access_token)
+
+        # resp = make_response(jsonify({"result": "success","access_token":access_token}))
+        # resp.set_cookie('access_token', access_token, httponly=True)  # httponly=True로 설정하여 JavaScript에서 접근 불가능하게 함
+        # return resp
+        return jsonify({'result': 'success', 'token': token})
+    
+    else:
+        return jsonify({"message": "아이디와 비밀번호를 다시 확인해주세요."})
+
+
+# @app.route("/protected", methods=["GET"])
+# @jwt_required()  # 토큰이 인정된 (접근권한이 인정된) 유저만이 이 API를 사용할 수 있다. 유효성 테스트
+# def protected():
+#     current_user = get_jwt_identity()  # token으로부터 저장된 데이터를 불러온다
+#     return jsonify(logged_in_as=current_user), 200
+
+
+# @app.route("/logout", methods=["GET"])
+# # @jwt_required()
+# def logout():
+#     resp = jsonify({"message": "로그아웃되었습니다. "})
+#     # unset_jwt_cookies(resp)
+#     return resp
+
+# @jwt_required(optional=True)
+# def loginornot(place_id):
+#     current_identity = get_jwt_identity()
+#     # 로그인 상태면
+#     if not current_identity:
+#         return jsonify({'result':'fail'})
+
+#     # 로그인하지 않은 상태면
+#     return jsonify({'places': 'places'})
 
 
 @app.route("/show")
@@ -148,9 +229,10 @@ def show():
 
 
 @app.route("/save", methods=["GET", "POST"])
+# @jwt_required()
 def recipe_save():
-    id = session.get('member_id')
-    print(id)
+    # member_id = get_jwt_identity()
+    # print(member_id)
     if request.method == "POST":
         # form에서 보낸 데이터 받아오기
         title_receive = request.form.get("title")
@@ -163,7 +245,7 @@ def recipe_save():
         contents5_receive = request.form.get("contents5")
         # 데이터를 DB에 저장하기
         recipe = Recipe(
-            member_id=id,
+            member_id=0,
             title=title_receive,
             image=image_receive,
             ingredient=ingredient_receive,
