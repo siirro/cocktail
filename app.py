@@ -1,9 +1,6 @@
-from flask import Flask, request, render_template, redirect, url_for, jsonify, session,
+from flask import Flask, request, render_template, redirect, url_for, jsonify, session
 import os
 from flask_sqlalchemy import SQLAlchemy
-import hashlib
-from datetime import datetime, timedelta
-from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, unset_jwt_cookies
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -11,26 +8,34 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
     basedir, "database.db"
 )
 
-db = SQLAlchemy(app)
+#########
+import hashlib
+from datetime import datetime, timedelta
+import jwt
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, unset_jwt_cookies
 
 class Config :
     DEBUG = True
     SECRET_KEY = 'QWERASDAFDSGSFDS'
+
 app.config.from_object(Config)
 jwt = JWTManager(app)
+
 app.config["JWT_COOKIE_SECURE"] = False # https를 통해서만 cookie가 갈수 있는지 보안망함
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"] # 토큰을 어디서 찾을지 설정
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=2) # 토큰 만료시간 설정 기본은 30분인데 저렇게하면 두시간인가
+#########
+
+db = SQLAlchemy(app)
 
 class Member(db.Model):
     mNum = db.Column(db.Integer, primary_key=True, index=True)
-    member_id = db.Column(db.String, nullable=False, unique = True)
+    member_id = db.Column(db.String, nullable=False, unique=True)
     pw = db.Column(db.String, nullable=False)
     nickname = db.Column(db.String, nullable=False)
 
     def __repr__(self):
         return
-
 
 class Recipe(db.Model):
     rNum = db.Column(db.Integer, primary_key=True, index=True)
@@ -93,7 +98,9 @@ def checkId():
         return jsonify({"status": "exist"})
     else:
         return jsonify({"status": "available"})
-## only 로그인한 회원만!!! 사용 예시입니다.
+
+
+## only 로그인한 회원만!!! 사용 예시입니다. 
 ## @jwt_required()와 get_jwt_identity 사용하시면 됨!
 @app.route("/yoururl")
 @jwt_required()
@@ -101,11 +108,13 @@ def yoururl():
     ## 현재 로그인한 회원의 id를 가져옴.
     member_id = get_jwt_identity()
     print(member_id)
+
     return render_template("join.html")
 
 @app.route("/join", methods=["GET"])
 def ddd():
     return render_template("join.html")
+
 
 @app.route("/join", methods=["POST"])
 def join():
@@ -113,27 +122,34 @@ def join():
     pw = request.form.get("pw")
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
     nickname = request.form.get("nickname")
+
     member = Member(member_id=member_id, pw=pw_hash, nickname=nickname)
     db.session.add(member)
     db.session.commit()
+
     print("회원가입DB입력완료")
     return render_template("join.html")
+
 
 @app.route("/login", methods=["GET"])
 def dddd():
     return render_template("join.html")
 
+
 @app.route("/login", methods=["POST"])
 def login():
     member_id = request.form.get('member_id')
-    pw = request.form.get('pw')
+    pw = request.form.get('pw') 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
+
     result = Member.query.filter_by(member_id=member_id, pw=pw_hash).first()
+
     if result is not None:
         # payload = {
         #     'id': member_id,
         #     'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
         # }
+
         access_token = create_access_token(identity=member_id)
         # print(access_token)
         return jsonify({'result': 'success', 'token': access_token})
@@ -155,13 +171,16 @@ def logout():
 
 @app.route("/show")
 def show():
-    instances = (
-        db.session.query(Recipe, Member)
-        .join(Member, Member.mNum == Recipe.member_id)
-        .all()
+    # uery = db.session.query(Member)
+    # query = uery.join(Recipe, Member.mNum == Recipe.member_id)
+    joined_data = (
+        db.session.query(Member, Recipe)
+        .join(Recipe, Member.mNum == Recipe.member_id)
+        .first()
     )
-
-    return render_template("showcocktail.html", data=instances)
+    print(joined_data)
+    # recipe1 = Recipe.query.first()
+    return render_template("showcocktail.html", data=joined_data)
 
 
 @app.route("/save", methods=["GET", "POST"])
@@ -179,7 +198,7 @@ def recipe_save():
 
         # 데이터를 DB에 저장하기
         recipe = Recipe(
-            member_id=1,
+            member_id=0,
             title=title_receive,
             image=image_receive,
             ingredient=ingredient_receive,
@@ -197,9 +216,14 @@ def recipe_save():
         return render_template("posting.html")
 
 
-# 게시글을 작성 중에 취소한다면,
-@app.route("/reset_form", methods=["POST"])
-def reset_form():
+@app.route("/delete/<int:recipeNum>")
+def delete(recipeNum):
+    recipe_delete = Recipe.query.get(recipeNum)
+
+    if recipe_delete:
+        db.session.delete(recipe_delete)
+        db.session.commit()
+
     return redirect(url_for("main.html"))
 
 
