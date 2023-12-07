@@ -20,17 +20,12 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
-        /* letter-spacing: 1em; */
       }
 
       .searchBar {
         display: flex;
         flex-direction: column;
         align-items: center;
-      }
-
-      .background {
-        height: 150vh;
       }
 
       .background-banner {
@@ -65,6 +60,8 @@
       integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       crossorigin="anonymous"
     />
+
+    <script src="jquery-3.7.1.min.js"></script>
   </head>
 
   <body data-bs-theme="white">
@@ -151,7 +148,6 @@
                 aria-label="Close"
               ></button>
             </div>
-
             <div class="modal-body p-5 pt-0">
               <form class="" action="/login" method="POST">
                 <div class="form-floating mb-3">
@@ -159,6 +155,7 @@
                     type="text"
                     class="form-control rounded-3"
                     name="member_id"
+                    id="member_id2"
                     placeholder=""
                   />
                   <label for="floatingInput">ID</label>
@@ -168,18 +165,18 @@
                     type="password"
                     class="form-control rounded-3"
                     name="pw"
+                    id="pw2"
                     placeholder=""
                   />
                   <label for="floatingPassword">Password</label>
                 </div>
-
                 <button
+                  onclick="sign_in()"
                   class="w-100 mb-2 btn btn-lg rounded-3 btn-warning"
-                  type="submit"
+                  type="button"
                 >
                   로그인
                 </button>
-
                 <hr class="my-4" />
                 <h2 class="fs-5 fw-bold mb-3">아직 저희 회원이 아니신가요?</h2>
                 <button
@@ -315,13 +312,13 @@
         inputPw.addEventListener("keyup", function () {
           if (inputPw.value == inputPwc.value) {
             checkp.innerHTML = `<svg style="color: green;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
-                                      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-                                  </svg>`;
+                                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                                          </svg>`;
             flag1 = true;
           } else {
             checkp.innerHTML = `<svg style="color: red;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                                  </svg>`;
+                                              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                          </svg>`;
             flag1 = false;
           }
           if (inputPw.value == "") {
@@ -332,13 +329,13 @@
         inputPwc.addEventListener("keyup", function () {
           if (inputPw.value == inputPwc.value) {
             checkp.innerHTML = `<svg style="color: green;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
-                                      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-                                  </svg>`;
+                                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                                          </svg>`;
             flag1 = true;
           } else {
             checkp.innerHTML = `<svg style="color: red;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                                  </svg>`;
+                                              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                          </svg>`;
             flag1 = false;
           }
           if (inputPwc.value == "") {
@@ -358,15 +355,15 @@
             .then((data) => {
               if (data.status === "exist") {
                 check.innerHTML = `<svg style="color: red;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                                  </svg>`;
+                                              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                          </svg>`;
                 flag2 = false;
               }
               // 사용가능
               else {
                 check.innerHTML = `<svg style="color: green;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
-                                      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-                                  </svg>`;
+                                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                                          </svg>`;
                 flag2 = true;
               }
               //키업하다가 빈칸됐을때 아이콘삭제
@@ -405,34 +402,35 @@
         function sign_in() {
           let member_id2 = $("#member_id2").val();
           let pw2 = $("#pw2").val();
-
-          if (member_id == "") {
+          if (member_id2 == "") {
             alert("아이디를 입력해주세요.");
             $("#member_id2").focus();
           }
-          if (pw == "") {
+          if (pw2 == "") {
             alert("비밀번호를 입력해주세요.");
             $("#pw2").focus();
           }
-
-          $.ajax({
-            type: "POST",
-            url: "/login",
-            data: {
-              member_id: member_id2,
-              pw: pw2,
+          let data = {
+            member_id: member_id2,
+            pw: pw2,
+          };
+          fetch("/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-
-            success: function (response) {
-              console.log(response);
-              if (response["result"] == "success") {
-                alert("로그인성공");
+            body: JSON.stringify(data),
+          })
+            .then((response) => {
+              return response.json();
+            })
+            .then((data) => {
+              if (data.message === "ok") {
                 window.location.replace("/");
               } else {
-                alert(response["result"]);
+                alert(data.message);
               }
-            },
-          });
+            });
         }
 
         function getCookie(name) {
@@ -491,6 +489,7 @@
         integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"
       ></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     </div>
   </body>
 </html>
