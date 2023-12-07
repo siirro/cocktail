@@ -19,7 +19,6 @@ class Config:
     DEBUG = True
     SECRET_KEY = "QWERASDAFDSGSFDS"
 
-
 app.config.from_object(Config)
 jwt = JWTManager(app)
 app.config["JWT_COOKIE_SECURE"] = False  # https를 통해서만 cookie가 갈수 있는지 보안망함
@@ -83,12 +82,21 @@ with app.app_context():
 @app.route("/")
 def main():
     # 로그인 상태를 관리하는 함수: is_admin
-    is_admin = False
+    id = session.get("member_id")
+    print(id)
+
+    if "member_id" in session:
+        is_admin = True
+    else:
+        is_admin = False
+    result = Member.query.filter_by(member_id=id).first()
+    
     query = (
         db.session.query(Recipe, Member)
         .join(Member, Member.mNum == Recipe.member_id)
         .all()
     )
+
     searched_word = request.args.get("searched_word")
     if searched_word:
         filter_list = (
@@ -100,7 +108,7 @@ def main():
         db.session.commit()
         return render_template("main.html", data=filter_list, is_admin=is_admin)
     else:
-        return render_template("main.html", data=query, is_admin=is_admin)
+        return render_template("main.html", data=query, is_admin=is_admin, result=result)
 
 
 @app.route("/checkId", methods=["POST"])
@@ -138,19 +146,18 @@ def dddd():
 
 @app.route("/login", methods=["POST"])
 def login():
-    member_id = request.form.get("member_id")
-    pw = request.form.get("pw")
+    member_id = request.json.get("member_id")
+    pw = request.json.get("pw")
     pw_hash = hashlib.sha256(pw.encode("utf-8")).hexdigest()
-    result = Member.query.filter_by(member_id=member_id, pw=pw_hash).first()
+    result = Member.query.filter_by(member_id=member_id, pw=pw_hash).first()    
     if result is not None:
-        # session[result.mNum] = result.mNum
-        # id = session.get(result.mNum)
         session["member_id"] = member_id
         id = session.get("member_id")
         print(id)
-        return jsonify({"result": "success"})
+        # return redirect("../")
+        return jsonify({"message": "ok"})
     else:
-        return jsonify({"result": "로그인에 실패하셨습니다."})
+        return jsonify({"message": "아이디와 비밀번호를 확인해주세요."}), 403        
 
 
 @app.route("/isLogin", methods=["GET"])
@@ -159,16 +166,17 @@ def isLogin():
         return jsonify({"message": "post"})
         # return render_template('posting.html')
     else:
-        return jsonify({"message": "로그인 해주세요"}), 403
+        return jsonify({"message": "로그인 해주세요"}), 405
 
 
 @app.route("/logout")
 def logout():
+    print("지워져라")
     if "member_id" in session:
         session.pop("member_id")
     # id = session.get('member_id')
     # print(id)
-    return render_template("main.html")
+    return redirect(url_for("main"))
 
 
 @app.route("/show/<int:recipeNum>")
@@ -219,6 +227,14 @@ def delete_comment(comment_id):
 
 @app.route("/save", methods=["GET", "POST"])
 def recipe_save():
+    id = session.get("member_id")
+
+    if "member_id" in session:
+        is_admin = True
+    else:
+        is_admin = False
+    result = Member.query.filter_by(member_id=id).first()    
+
     if request.method == "POST":
         # form에서 보낸 데이터 받아오기
         title_receive = request.form.get("title")
@@ -245,7 +261,7 @@ def recipe_save():
         db.session.commit()
         return redirect(url_for("main"))
     elif request.method == "GET":
-        return render_template("posting.html")
+        return render_template("posting.html", data=is_admin, is_admin=is_admin, result=result)
 
 
 @app.route("/delete/<int:recipeNum>")
