@@ -83,12 +83,21 @@ with app.app_context():
 @app.route("/")
 def main():
     # 로그인 상태를 관리하는 함수: is_admin
-    is_admin = False
+    id = session.get("member_id")
+    print(id)
+
+    if "member_id" in session:
+        is_admin = True
+    else:
+        is_admin = False
+    result = Member.query.filter_by(member_id=id).first()
+
     query = (
         db.session.query(Recipe, Member)
         .join(Member, Member.mNum == Recipe.member_id)
         .all()
     )
+
     searched_word = request.args.get("searched_word")
     if searched_word:
         filter_list = (
@@ -98,9 +107,13 @@ def main():
             .all()
         )
         db.session.commit()
-        return render_template("main.html", data=filter_list, is_admin=is_admin)
+        return render_template(
+            "main.html", data=filter_list, is_admin=is_admin, result=result
+        )
     else:
-        return render_template("main.html", data=query, is_admin=is_admin)
+        return render_template(
+            "main.html", data=query, is_admin=is_admin, result=result
+        )
 
 
 @app.route("/checkId", methods=["POST"])
@@ -148,7 +161,7 @@ def login():
         session["member_id"] = member_id
         id = session.get("member_id")
         print(id)
-        return jsonify({"result": "success"})
+        return redirect("/")
     else:
         return jsonify({"result": "로그인에 실패하셨습니다."})
 
@@ -168,13 +181,21 @@ def logout():
         session.pop("member_id")
     # id = session.get('member_id')
     # print(id)
-    return render_template("main.html")
+    return redirect(url_for("main"))
 
 
 @app.route("/show/<int:recipeNum>")
 def show(recipeNum):
+    if "member_id" in session:
+        is_admin = True
+    else:
+        is_admin = False
+
+    id = session.get("member_id")
+    print("넌 뭐냐?", id)
+
     recipe = Recipe.query.filter_by(rNum=recipeNum).first()
-    member = Member.query.filter_by(mNum=recipe.member_id).first()
+    result = Member.query.filter_by(member_id=id).first()
     comments = Comment.query.filter_by(rNum=recipeNum).all()
 
     instances = (
@@ -185,22 +206,41 @@ def show(recipeNum):
     )
 
     return render_template(
-        "showcocktail.html", data=instances, recipe=recipe, comments=comments
+        "showcocktail.html",
+        data=instances,
+        recipe=recipe,
+        comments=comments,
+        member_id=id,  # 이 부분을 수정
+        is_admin=is_admin,
+        result=result,
     )
 
 
 @app.route("/comment/<int:recipeNum>", methods=["POST"])
 def comment(recipeNum):
+    is_admin = False
+    member_id = None
+
+    id = session.get("member_id")
+
+    if "member_id" in session:
+        id = session["member_id"]
+        result = Member.query.filter_by(member_id=id).first()
+
+        if result:
+            mNum = result.mNum
+            is_admin = True
+
     if request.method == "POST":
-        comment_text = request.form.get("comment")  # POST 요청에서 댓글 텍스트 가져오기
-        # 실제 recipeNum을 사용하여 댓글에 해당하는 Recipe를 찾는다.
+        comment_text = request.form.get("comment")
+
         comment = Comment(
-            rNum=recipeNum,  # 해당 댓글이 어떤 레시피에 속하는지 식별
-            member_id="1",  # 여기에는 실제 사용자 ID를 넣음
+            rNum=recipeNum,
+            member_id="mNum if is_admin else None",
             contents=comment_text,
         )
-        db.session.add(comment)  # 새 댓글을 데이터베이스에 추가
-        db.session.commit()  # 변경 사항 저장
+        db.session.add(comment)
+        db.session.commit()
 
         return redirect(url_for("show", recipeNum=recipeNum))
 
@@ -210,15 +250,35 @@ def delete_comment(comment_id):
     comment_to_delete = Comment.query.get(comment_id)
 
     if comment_to_delete:
-        # 해당 댓글을 데이터베이스에서 삭제
         db.session.delete(comment_to_delete)
         db.session.commit()
 
-    return redirect(url_for("show", recipeNum=comment_to_delete.rNum))
+    # 삭제 후 다시 보여줄 데이터를 쿼리합니다.
+    instances = (
+        db.session.query(Recipe, Member)
+        .join(Member, Member.mNum == Recipe.member_id)
+        .filter(Recipe.rNum == comment_to_delete.rNum)
+        .all()
+    )
+
+    return redirect(url_for("show", recipeNum=comment_to_delete.rNum, data=instances))
 
 
 @app.route("/save", methods=["GET", "POST"])
 def recipe_save():
+    is_admin = False
+    member_id = None  # member_id 초기화
+
+    id = session.get("member_id")
+
+    if "member_id" in session:
+        member_id = session["member_id"]
+        result = Member.query.filter_by(member_id=id).first()
+
+        if result:
+            mNum = result.mNum
+            is_admin = True
+
     if request.method == "POST":
         # form에서 보낸 데이터 받아오기
         title_receive = request.form.get("title")
@@ -231,7 +291,7 @@ def recipe_save():
         contents5_receive = request.form.get("contents5")
         # 데이터를 DB에 저장하기
         recipe = Recipe(
-            member_id=1,
+            member_id=mNum if is_admin else None,
             title=title_receive,
             image=image_receive,
             ingredient=ingredient_receive,
@@ -244,8 +304,11 @@ def recipe_save():
         db.session.add(recipe)
         db.session.commit()
         return redirect(url_for("main"))
+
     elif request.method == "GET":
-        return render_template("posting.html")
+        return render_template(
+            "posting.html", data=is_admin, is_admin=is_admin, result=result
+        )
 
 
 @app.route("/delete/<int:recipeNum>")
@@ -265,6 +328,14 @@ def delete(recipeNum):
 
 @app.route("/edit/<int:recipeNum>", methods=["GET", "POST"])
 def edit(recipeNum):
+    if "member_id" in session:
+        is_admin = True
+    else:
+        is_admin = False
+
+    id = session.get("member_id")
+
+    result = Member.query.filter_by(member_id=id).first()
     recipe = Recipe.query.get(recipeNum)
 
     if request.method == "POST":
@@ -281,7 +352,9 @@ def edit(recipeNum):
         db.session.commit()  # 변경 사항 저장
         return redirect(url_for("show", recipeNum=recipeNum))  # 수정 후 목록 페이지로 이동
 
-    return render_template("edit.html", recipe=recipe)
+    return render_template(
+        "edit.html", recipe=recipe, data=is_admin, is_admin=is_admin, result=result
+    )
 
 
 if __name__ == "__main__":
