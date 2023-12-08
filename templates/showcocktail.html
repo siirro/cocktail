@@ -1,166 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>상세 페이지</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
 
-<style>
+  <style>
     @import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
 
     * {
-        font-family: "Gowun Dodum", sans-serif;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      font-family: "Gowun Dodum", sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-        background-image: url("https://cdn.pixabay.com/photo/2019/12/29/02/33/snow-4726119_1280.jpg");
-        max-height: 100%;
-        background-position: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
+      background-image: url("https://cdn.pixabay.com/photo/2019/12/29/02/33/snow-4726119_1280.jpg");
+      max-height: 100%;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
     }
 
     a:link,
     a:visited {
-        text-decoration: none;
-        color: black;
+      text-decoration: none;
+      color: black;
     }
 
     .clearfix::after {
-        content: "";
-        clear: both;
-        display: block;
+      content: "";
+      clear: both;
+      display: block;
     }
 
     img {
-        display: block;
+      display: block;
     }
 
     .container {
-        /* Adjust this value as per your requirement */
-        height: 70vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
+      /* Adjust this value as per your requirement */
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
 
     .content,
     #content {
-        width: 510px;
-        margin: 60px auto 50px auto;
-        padding-bottom: 10px;
+      width: 510px;
+      margin: 60px auto 50px auto;
+      padding-bottom: 10px;
     }
 
     .comm {
-        margin: 30px auto 0px auto;
-        width: 485px;
+      margin: 30px auto 0px auto;
+      width: 485px;
     }
 
     .recipe-box {
-        font-weight: bold;
-        font-size: 30px;
+      font-weight: bold;
+      font-size: 30px;
     }
 
     .id {
-        margin-left: 10px;
-        margin-top: 20px;
+      margin-left: 10px;
+      margin-top: 20px;
     }
 
     .img {
-        width: 300px;
-        heigtht: 400px;
+      width: 300px;
+      heigtht: 400px;
     }
 
     #deleteBtn:hover {
-        color: rgb(239, 45, 45);
-        /* 변경하고자 하는 색상으로 수정 가능 */
+      color: rgb(239, 45, 45);
+      /* 변경하고자 하는 색상으로 수정 가능 */
     }
-</style>
+  </style>
 
-<body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-        crossorigin="anonymous"></script>
+  <body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
     <!-- navbar -->
     {% include 'navbar.html' %}
 
     <div class="content">
-        <div class="container">
-            {% for recipe_instance, member_instance in data %}
-            <p>
-                <span style="font-size: 200%">{{ recipe_instance.title }}</span>
-                <span style="font-size: 100%">by {{ member_instance.nickname }}
-                </span>
-            </p>
-            <img src="{{ recipe_instance.image }}" class="img" />
+      <div class="container">
+        {% for recipe_instance, member_instance in data %}
+        <p>
+          <span style="font-size: 200%">{{ recipe_instance.title }}</span>
+          <span style="font-size: 100%"
+            >by {{ member_instance.nickname }}
+          </span>
+        </p>
+        <img src="{{ recipe_instance.image }}" class="img" />
+      </div>
+      <h3 style="margin-bottom: 30px">재료</h3>
+      <h5 style="margin-bottom: 60px">{{ recipe_instance.ingredient }}</h5>
+
+      <h3>만드는 법</h3>
+      <div class="comm" id="content" style="margin-top: 20px">
+        <div
+          class="comm"
+          id="content"
+          style="margin-top: 30px; margin-bottom: 0%"
+        >
+          <!-- 만드는 법 내용 -->
+          <p style="font-size: 18px">1. {{ recipe_instance.contents1 }}</p>
+          <p style="font-size: 18px">2. {{ recipe_instance.contents2 }}</p>
+          <p style="font-size: 18px">3. {{ recipe_instance.contents3 }}</p>
+          <p style="font-size: 18px">4. {{ recipe_instance.contents4 }}</p>
+          <p style="font-size: 18px">5. {{ recipe_instance.contents5 }}</p>
         </div>
-        <h3 style="margin-bottom: 30px;">재료</h3>
-        <h5 style="margin-bottom: 60px;">{{ recipe_instance.ingredient }}</h5>
+      </div>
 
-        <h3>만드는 법</h3>
-        <div class="comm" id="content" style="margin-top: 20px;">
-            <div class="comm" id="content" style="margin-top: 30px; margin-bottom: 0%;">
-                <!-- 만드는 법 내용 -->
-                <p style="font-size: 18px;"> 1. {{ recipe_instance.contents1 }}</p>
-                <p style="font-size: 18px;"> 2. {{ recipe_instance.contents2 }}</p>
-                <p style="font-size: 18px;"> 3. {{ recipe_instance.contents3 }}</p>
-                <p style="font-size: 18px;"> 4. {{ recipe_instance.contents4 }}</p>
-                <p style="font-size: 18px;"> 5. {{ recipe_instance.contents5 }}</p>
+      {% if member_instance.member_id == member_id %}
+      <div style="margin-top: 0px; margin-bottom: 0px">
+        <!-- 수정, 삭제 버튼 간격 조절 -->
+        <!-- 수정 버튼 -->
+        <a
+          href="{{ url_for('edit', recipeNum=recipe_instance.rNum) }}"
+          class="btn-link btn-primary"
+          >수정</a
+        >
+        <!-- 삭제 버튼 -->
+        <a
+          href="{{ url_for('delete', recipeNum=recipe_instance.rNum) }}"
+          class="btn-link btn-danger"
+          >삭제</a
+        >
+      </div>
+      {% endif %} {% endfor %}
+
+      <div class="content">
+        <div class="form-floating comment" style="text-align: right">
+          <form
+            action="{{ url_for('comment', recipeNum=recipe.rNum) }}"
+            method="POST"
+          >
+            <div>
+              <textarea
+                name="comment"
+                id="comment"
+                class="form-control"
+                placeholder="코멘트를 남겨주세요"
+              ></textarea>
             </div>
+            <button
+              type="submit"
+              class="btn btn-success"
+              style="margin-top: 10px"
+            >
+              댓글 추가
+            </button>
+          </form>
         </div>
-
-        {% if member_instance.member_id == member_id %}
-        <div style="margin-top: 0px; margin-bottom: 0px;"> <!-- 수정, 삭제 버튼 간격 조절 -->
-            <!-- 수정 버튼 -->
-            <a href="{{ url_for('edit', recipeNum=recipe_instance.rNum) }}" class="btn-link btn-primary">수정</a>
-            <!-- 삭제 버튼 -->
-            <a href="{{ url_for('delete', recipeNum=recipe_instance.rNum) }}" class="btn-link btn-danger">삭제</a>
+        <div class="comments" style="margin-top: 20px">
+          <h3>댓글 목록</h3>
+          <hr />
+          <ul id="list-li" style="margin-bottom: 20px; padding-inline-start: 0">
+            {% for comment, author in comments %}
+            <li
+              style="
+                display: flex;
+                justify-content: space-between;
+                list-style: none;
+              "
+            >
+              <span style="flex: 1; font-size: 18px"
+                >{{ comment.contents }}</span
+              >
+              <span style="margin-left: auto; font-size: 15px"
+                >by {{ author.nickname }} {% if author.member_id == member_id %}
+                <a
+                  href="{{ url_for('delete_comment_new', comment_id=comment.cNum) }}"
+                >
+                  <i
+                    class="material-icons"
+                    id="deleteBtn"
+                    style="font-size: 20px"
+                    >delete_forever</i
+                  >
+                </a>
+                {% endif %}
+              </span>
+            </li>
+            {% endfor %}
+          </ul>
         </div>
-        {% endif %}
-        {% endfor %}
-
-        <div class="content">
-            <div class="form-floating comment" style=" text-align: right;">
-                <form action="{{ url_for('comment', recipeNum=recipe.rNum) }}" method="POST">
-                    <div>
-                        <textarea name="comment" id="comment" class="form-control" placeholder="코멘트를 남겨주세요"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success" style="margin-top: 10px">
-                        댓글 추가
-                    </button>
-                </form>
-            </div>
-            <div class="comments" style="margin-top: 20px;">
-                <h3>댓글 목록</h3>
-                <hr>
-                <ul id = "list-li" style="margin-bottom: 20px; padding-inline-start:0;">
-                    {% for comment, author in comments %}
-                    <li style="display: flex; justify-content: space-between; list-style: none;">
-                        <span style="flex: 1; font-size: 18px;">{{ comment.contents }}</span>
-                        <span style="margin-left: auto; font-size: 15px;">by {{ author.nickname }} {% if
-                            author.member_id == member_id
-                            %}
-                            <a href="{{ url_for('delete_comment_new', comment_id=comment.cNum) }}">
-                                <i class="material-icons" id="deleteBtn" style="font-size: 20px;">delete_forever</i>
-                            </a>
-                            {% endif %}
-                        </span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>{% include 'footer.html' %}
-</body>
-
+      </div>
+    </div>
+    {% include 'footer.html' %}
+  </body>
 </html>
