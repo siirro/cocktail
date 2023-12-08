@@ -151,19 +151,18 @@ def dddd():
 
 @app.route("/login", methods=["POST"])
 def login():
-    member_id = request.form.get("member_id")
-    pw = request.form.get("pw")
+    member_id = request.json.get("member_id")
+    pw = request.json.get("pw")
     pw_hash = hashlib.sha256(pw.encode("utf-8")).hexdigest()
     result = Member.query.filter_by(member_id=member_id, pw=pw_hash).first()
     if result is not None:
-        # session[result.mNum] = result.mNum
-        # id = session.get(result.mNum)
         session["member_id"] = member_id
         id = session.get("member_id")
         print(id)
-        return redirect("/")
+        # return redirect("../")
+        return jsonify({"message": "ok"})
     else:
-        return jsonify({"result": "로그인에 실패하셨습니다."})
+        return jsonify({"message": "아이디와 비밀번호를 확인해주세요."}), 403
 
 
 @app.route("/isLogin", methods=["GET"])
@@ -172,11 +171,12 @@ def isLogin():
         return jsonify({"message": "post"})
         # return render_template('posting.html')
     else:
-        return jsonify({"message": "로그인 해주세요"}), 403
+        return jsonify({"message": "로그인 해주세요"}), 405
 
 
 @app.route("/logout")
 def logout():
+    print("지워져라")
     if "member_id" in session:
         session.pop("member_id")
     # id = session.get('member_id')
@@ -205,12 +205,17 @@ def show(recipeNum):
         .all()
     )
 
+    comments_with_authors = []
+    for comment in comments:
+        comment_author = Member.query.filter_by(mNum=comment.member_id).first()
+        comments_with_authors.append((comment, comment_author))
+
     return render_template(
         "showcocktail.html",
         data=instances,
         recipe=recipe,
-        comments=comments,
-        member_id=id,  # 이 부분을 수정
+        comments=comments_with_authors,
+        member_id=id,
         is_admin=is_admin,
         result=result,
     )
@@ -228,7 +233,7 @@ def comment(recipeNum):
         result = Member.query.filter_by(member_id=id).first()
 
         if result:
-            mNum = result.mNum
+            member_id = result.mNum
             is_admin = True
 
     if request.method == "POST":
@@ -236,7 +241,7 @@ def comment(recipeNum):
 
         comment = Comment(
             rNum=recipeNum,
-            member_id="mNum if is_admin else None",
+            member_id=member_id,
             contents=comment_text,
         )
         db.session.add(comment)
@@ -245,23 +250,19 @@ def comment(recipeNum):
         return redirect(url_for("show", recipeNum=recipeNum))
 
 
-@app.route("/delete_comment/<int:comment_id>")
-def delete_comment(comment_id):
+@app.route("/delete-comment/<int:comment_id>")
+def delete_comment_new(comment_id):
     comment_to_delete = Comment.query.get(comment_id)
 
     if comment_to_delete:
+        recipeNum = comment_to_delete.rNum  # 댓글이 속한 레시피 번호 가져오기
+
         db.session.delete(comment_to_delete)
         db.session.commit()
 
-    # 삭제 후 다시 보여줄 데이터를 쿼리합니다.
-    instances = (
-        db.session.query(Recipe, Member)
-        .join(Member, Member.mNum == Recipe.member_id)
-        .filter(Recipe.rNum == comment_to_delete.rNum)
-        .all()
-    )
+        return redirect(url_for("show", recipeNum=recipeNum))
 
-    return redirect(url_for("show", recipeNum=comment_to_delete.rNum, data=instances))
+    return redirect(url_for("main"))
 
 
 @app.route("/save", methods=["GET", "POST"])
