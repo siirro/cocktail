@@ -13,38 +13,39 @@
         }
 
         body {
-          background-image: url("https://cdn.pixabay.com/photo/2019/12/29/02/33/snow-4726119_1280.jpg");
-          max-height: 100%;
-          background-position: center;
-          background-size: cover;
-          background-repeat: no-repeat;
-          background-attachment: fixed;
+            background-image: url("https://cdn.pixabay.com/photo/2019/12/29/02/33/snow-4726119_1280.jpg");
+            max-height: 100%;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
-        
+
         .buttons {
             padding-right: 20px;
         }
 
         .words {
             display: flex;
-            padding-top:40px;
+            padding-top: 40px;
             flex-direction: column;
             align-items: center;
             text-align: center;
             /* letter-spacing: 1em; */
         }
+
         .search-word {
-          padding-bottom:20px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .searchBar {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom:80px;
+            padding-bottom: 80px;
         }
 
         .background {
@@ -52,24 +53,32 @@
         }
 
         .card-img-top {
-          max-width: 100%;
-          max-height: 400px;
-      }
+            max-width: 100%;
+            max-height: 400px;
+        }
 
         .card-title {
-          white-space: nowrap;        
-          overflow: hidden;        
-          text-overflow: ellipsis;     
-          max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
-      
+
         .custom-input {
-          width: 300px;
-      }
-  
-      .custom-btn {
-          width: 100px;
-      }
+            width: 300px;
+        }
+
+        .custombtn {
+            margin-left: 10px;
+            width: 100px;
+            writing-mode: horizontal-tb;
+        }
+        .topbox{
+            margin-top: 80px;
+        }
+        .bottombox{
+            margin-bottom: 100px;
+        }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -80,76 +89,71 @@
 <body data-bs-theme="white">
     <div class="background-banner">
         {% include 'navbar.html' %}
-        <div class="words">
+        <div class="words topbox">
             <h1>한 잔의 칵테일, 무한한 즐거움을 담아.</h1>
         </div>
-        <br><br><br>
-        <div class="words">
+        <div class="words topbox">
             <h3>특별한 레시피로 여러분을 기다리고 있습니다.</h3>
         </div>
-        <br><br><br>
-        <div class="words">
+        <div class="words bottombox topbox">
             <button type="mainButton" class="btn btn-secondary btn-lg" onclick="go_login()"">
-                <a class="nav-link text-white">포스팅하기</a>
+                <a class=" nav-link text-white">포스팅하기</a>
             </button>
         </div>
-        <br><br><br><br><br>
         <div class="row row-cols-1 row-cols-md-4 g-4 mx-auto w-75 pb-5">
             {% for recipe, member in data %}
             <div class="col">
-              <div class="card h-100" style="width:280px;">
-                  <a class="nav-link text-black" href="/show/{{recipe.rNum}}">
-                      <img src="{{recipe.image}}" class="card-img-top" alt="Recipe Image" style="height: 320px; object-fit: cover;" name="image_url">
-                      <div class="card-body">
-                          <div>
-                              <h5 class="card-title" name="title">{{recipe.title}}</h5>
-                              <div class="d-flex justify-content-between align-items-center">
-                                  <span class="card-text font-weight-bold" id="written" name="username">Written by. {{member.nickname}}</span>
-                                  <i class="bi bi-heart"></i>
-                              </div>
-                          </div>                          
-                      </div>
-                  </a>
-              </div>
-          </div>
-          
+                <div class="card h-100" style="width:280px;">
+                    <a class="nav-link text-black" href="/show/{{recipe.rNum}}">
+                        <img src="{{recipe.image}}" class="card-img-top" alt="Recipe Image"
+                            style="height: 320px; object-fit: cover;" name="image_url">
+                        <div class="card-body">
+                            <div>
+                                <h5 class="card-title" name="title">{{recipe.title}}</h5>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="card-text font-weight-bold" id="written" name="username">Written by.
+                                        {{member.nickname}}</span>
+                                    <i class="bi bi-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             {% endfor %}
         </div>
-        <br><br><br>
-        <div class="search-word">
-          <h4>지금, 당신이 원하는 칵테일이 무엇인가요?</h4>
+        <div class="search-word topbox">
+            <h4>지금, 당신이 원하는 칵테일이 무엇인가요?</h4>
         </div>
         <div class="searchBar">
-          <form class="d-flex" role="search">
-              <input class="form-control me-2 custom-input" type="search" placeholder="Search" aria-label="Search" name="searched_word">        
-              <button class="btn btn-outline-secondary custom-btn" type="submit">검색</button>
-          </form>
-      </div>
-      <br><br><br><br>
+            <form class="d-flex" role="search">
+                <div class="col-md-12">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                        name="searched_word">
+                </div>
+                <div class="custombtn">
+                    <button class="btn btn-outline-secondary custombtn" type="submit">검색</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="container">
-        <footer class="py-3 my-4">
-            <ul class="nav justify-content-center border-bottom pb-0 mb-3">
-                <li class="nav-item"><a class="nav-link px-2 text-body-secondary">99일간 여정을 떠납니다</a></li>
-            </ul>
-            <p class="text-center text-body-secondary">항해 99, Team 3</p>
-        </footer>
-    </div>
-      
-        <script>
-            function go_login() {
-                fetch('/isLogin', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'same-origin'
-                }).then(response => {
-                    return response.text();
-                })
+    {% include 'footer.html' %}
+
+    <script>
+        function go_login() {
+            fetch('/isLogin', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+            }).then(response => {
+                return response.text();
+            })
                 .then(data => {
                     jsonData = JSON.parse(data)
-                    if(jsonData.message === 'post') {
+                    if (jsonData.message === 'post') {
                         window.location.href = '/save'
                     } else {
                         alert(jsonData.message)
@@ -157,11 +161,8 @@
                 }).catch(error => {
                     console.error(error)
                 })
-            }
-        </script>
+        }
+    </script>
 </body>
+
 </html>
-
-
-
-
