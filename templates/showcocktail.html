@@ -162,11 +162,12 @@
       <div class="comments">
         <h3>댓글 목록</h3>
         <ul>
-          {% for comment in comments %}
+          {% for comment, author in comments %}
           <li>
-            {{ comment.contents }} {% if comment.member_id == member_id %}
+            {{ comment.contents }} 작성자: {{ author.nickname }} {% if
+            author.member_id == member_id %}
             <a
-              href="{{ url_for('delete_comment', comment_id=comment.cNum) }}"
+              href="{{ url_for('delete_comment_new', comment_id=comment.cNum) }}"
               class="btn btn-danger btn-sm"
               >삭제</a
             >
