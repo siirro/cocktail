@@ -126,11 +126,6 @@ def checkId():
         return jsonify({"status": "available"})
 
 
-@app.route("/join", methods=["GET"])
-def ddd():
-    return render_template("join.html")
-
-
 @app.route("/join", methods=["POST"])
 def join():
     member_id = request.form.get("member_id")
@@ -140,13 +135,7 @@ def join():
     member = Member(member_id=member_id, pw=pw_hash, nickname=nickname)
     db.session.add(member)
     db.session.commit()
-    print("회원가입DB입력완료")
-    return render_template("main.html")
-
-
-@app.route("/login", methods=["GET"])
-def dddd():
-    return render_template("join.html")
+    return redirect(url_for("main"))
 
 
 @app.route("/login", methods=["POST"])
