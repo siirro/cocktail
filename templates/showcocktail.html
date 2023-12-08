@@ -29,23 +29,6 @@
         background-attachment: fixed;
     }
 
-    #list-li li {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-left: 0;
-    }
-
-    li {
-      list-style: none;
-      padding: 0;
-    }
-
-
     a:link,
     a:visited {
         text-decoration: none;
@@ -160,9 +143,10 @@
             </div>
             <div class="comments" style="margin-top: 20px;">
                 <h3>댓글 목록</h3>
-                <ul id = "list-li" style="margin-bottom: 20px;">
+                <hr>
+                <ul id = "list-li" style="margin-bottom: 20px; padding-inline-start:0;">
                     {% for comment, author in comments %}
-                    <li style="display: flex; justify-content: space-between;">
+                    <li style="display: flex; justify-content: space-between; list-style: none;">
                         <span style="flex: 1; font-size: 18px;">{{ comment.contents }}</span>
                         <span style="margin-left: auto; font-size: 15px;">by {{ author.nickname }} {% if
                             author.member_id == member_id
